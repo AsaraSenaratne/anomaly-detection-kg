@@ -23,7 +23,6 @@ with py7zr.SevenZipFile('../assets/yago-1.0-turtle.7z', mode='r') as extyago:
 print("Downloading Stanford NER 4.2.0")
 response = requests.get('https://nlp.stanford.edu/software/stanford-ner-4.2.0.zip')
 with open("../assets/stanford-ner-4.2.0.zip", 'wb') as stanford:
-    # stanford.extractall(path='../assets')
     stanford.write(response.content)
 
 print("Extracting Stanford NER 4.2.0")
@@ -38,7 +37,7 @@ with open("../assets/en_core_web_sm-3.0.0.tar.gz", 'wb') as encore:
 print("Extracting en_core_web_sm-3.0.0")
 fname = "../assets/en_core_web_sm-3.0.0.tar.gz"
 tar = tarfile.open(fname, "r:gz")
-tar.extractall()
+tar.extractall(path='../assets')
 
 import yago_links as yl
 import yago_nodes as nl

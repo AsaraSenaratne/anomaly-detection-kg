@@ -15,7 +15,7 @@ csv_with_features = "../results/features_selected_yago_links.csv"
 
 print("Populating the graph")
 graph = Graph()
-graph.parse('../assets/yago-1.0-turtle.ttl', format='ttl')
+graph.parse('../assets/yago-1.0.0-turtle.ttl', format='ttl')
 
 def construct_df():
     print("inside construct_df")

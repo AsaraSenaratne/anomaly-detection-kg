@@ -59,4 +59,3 @@ def fetch_data_from_file(dataset_path,operation_number):
 
 
 get_user_input()
-# fetch_data_from_file()
