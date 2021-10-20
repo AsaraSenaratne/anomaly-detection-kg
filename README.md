@@ -48,7 +48,10 @@ Ensure that the following libraries inside the 'assets' folder are properly
 downloaded properly, and imported within yago_links.py.
 ````
 en_core_web_sm-3.0.0
+Download lilnk: https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz
+
 stanford-ner-4.2.0
+Download lilnk: https://nlp.stanford.edu/software/stanford-ner-4.2.0.zip
 ````
 Run main.py:
 ```
