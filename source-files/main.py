@@ -9,7 +9,6 @@ import svm_training as svm
 import pattern_generation as pg
 import tarfile
 
-
 if not os.path.isdir("../results"):
     os.mkdir("../results")
 
@@ -51,6 +50,7 @@ def generate_features():
     yl.construct_df()
     execution_time = time.time() - start_time
     print('Total runtime taken feature generation: %.6f sec' % (execution_time))
+    learn_one_class_svm()
 
 def learn_one_class_svm():
     print("-----------------------------------")
@@ -59,15 +59,17 @@ def learn_one_class_svm():
     svm.get_abnormal_counts()
     execution_time = time.time() - start_time
     print('Total runtime taken feature generation: %.6f sec' % (execution_time))
+    visualization()
 
 def visualization():
     print("-----------------------------------")
     print("Started learning one-class SVM")
     start_time = time.time()
-    svm.get_abnormal_counts()
+    pg.identify_consistent_features()
     execution_time = time.time() - start_time
     print('Total runtime taken feature generation: %.6f sec' % (execution_time))
 
+generate_features()
 
 
 
