@@ -9,51 +9,16 @@ import matplotlib.patches as mpatches
 import seaborn as sns; sns.set_theme(color_codes=True)
 import csv
 from statistics import median
-# import parameters as pm
 
-# def def_params(dataset):
-#     pm.params(dataset)
-#     global ds, name, svm_output_file, support_file, tile_plot_file_name, association_plot_file_name
-#     # ds = dataset
-#     name = "Breath Sensors Diabetes"
-#     svm_file =
-#     svm_output_file = pm.params.svm_output_file
-#     # support_file = pm.params.support_file
-#     tile_plot_file_name = "../results/tile_plot_QLD_temp_edges.eps"
-#     association_plot_file_name = "../results/tile_plot_QLD_temp_edges.eps"
-#     identify_consistent_features()
-
-# pm.params(dataset)
 global ds, name, svm_output_file, support_file, tile_plot_file_name, association_plot_file_name
 ds = 100
-# name = "Breath Sensors Diabetes"
-# svm_file = pd.read_csv("assets/breath-sensors-diabetes-links-svm.csv")
-# svm_file.to_pickle("assets/breath-sensors-diabetes-links-svm.pkl")
-# svm_output_file = "assets/breath-sensors-diabetes-links-svm.pkl"
-# support_file = "assets/breath-sensors-diabetes-links-support.csv"
-# tile_plot_file_name = "assets/tile_plot_breath_sensors_edges.eps"
-# association_plot_file_name = "assets/ass_plot_breath_sensors_edges.eps"
 
-# name = "Acetone or Covid"
-# svm_file = pd.read_csv("assets/acetone-OR-covid-19-links-svm.csv")
-# svm_file.to_pickle("assets/acetone-OR-covid-19-links-svm.pkl")
-# svm_output_file = "assets/acetone-OR-covid-19-links-svm.pkl"
-# support_file = "assets/acetone-OR-covid-19-links-support.csv"
-# tile_plot_file_name = "assets/tile_plot_acetone-OR-covid-19-edges.eps"
-# association_plot_file_name = "assets/ass_plot_acetone-OR-covid-19-edges.eps"
 
-# name = input("Enter name for plots: ")
-# svm_output_file = input("Enter svm output pickle file name: ")
-# support_file = input("Enter name for support file: ")
-# tile_plot_file_name = input("Enter name for tile plot file: ")
-# association_plot_file_name = input("Enter name for association plot file: ")
-# columns_start_count = int(input("Enter columns start count: "))
-
-name = "Wikidata Node Labels"
-svm_output_file = "assets/wikidata_node_labels_svm_output.pkl"
-support_file = "assets/wikidata_node_labels_support.csv"
-tile_plot_file_name = "assets/tile_plot_wikidata_node_labels.eps"
-association_plot_file_name = "assets/ass_plot_wikidata_node_labels.eps"
+name = "YAGO Links"
+svm_output_file = "../results/yago_links_svm_output.pkl"
+support_file = "../results/yago_links_support.csv"
+tile_plot_file_name = "../results/tile_plot_yago_links.eps"
+association_plot_file_name = "../results/ass_plot_wikidata_yago_links.eps"
 columns_start_count = 0
 
 def identify_consistent_features():
@@ -161,7 +126,6 @@ def expand_kmeans_visualize(df, cols_extracted):
         for i in range(0, int(rows["pattern_occurence"])):
             expanded_numerical_table.loc[k] = list(rows)
             k += 1
-    # expanded_numerical_table.to_csv("expanded_numerical_table.csv")
 
     # method call to create the association graph
     create_association_graph(expanded_numerical_table)
@@ -173,7 +137,7 @@ def expand_kmeans_visualize(df, cols_extracted):
         clustering_df["pattern"] = df["pattern_id"].iloc[:-1]
         clustering_df["pattern_occurence"] = df["pattern_occurence"].iloc[:-1]
         clustering_df['pattern'] = clustering_df['pattern'].astype(str)
-        # clustering_df.to_csv("agglomerative_clustering.csv")
+        clustering_df.to_csv("agglomerative_clustering.csv")
         clustering_df = clustering_df.sort_values(['pattern'])
 
         patterns_list, patterns_dict = [], {}
@@ -205,7 +169,7 @@ def expand_kmeans_visualize(df, cols_extracted):
                     pattern = pattern.rstrip(", ")
                     cluster_dict[pattern] = sum_pattern_occurence
                 clustered_df = pd.DataFrame(cluster_dict.items(), columns=['pattern', 'pattern_occurence'])
-                # clustered_df.to_csv('agglomerative_clustering.csv', mode='a', header=True)
+                clustered_df.to_csv('agglomerative_clustering.csv', mode='a', header=True)
                 break
             else:
                 max_sim, c1, c2, c3, c4, c5, pattern_summation1, pattern_summation2 = -1, [], [], [], [], [], 0, 0
@@ -231,186 +195,14 @@ def expand_kmeans_visualize(df, cols_extracted):
         clustering_df["pattern"] = df["pattern_id"].iloc[:-1]
         clustering_df["pattern_occurence"] = df["pattern_occurence"].iloc[:-1]
         clustering_df['pattern'] = clustering_df['pattern'].astype(str)
-        # clustering_df.to_csv("agglomerative_clustering.csv")
+        clustering_df.to_csv("agglomerative_clustering.csv")
         clustering_df = clustering_df.sort_values(['pattern'])
         print(clustering_df)
         cluster_dict = {}
         for index, row in clustering_df.iterrows():
             cluster_dict[row['pattern']] = row['pattern_occurence']
         print(cluster_dict)
-        draw_mosaic_short(df, clustering_df, cluster_dict, cluster_dict, cols_extracted)
-
-def draw_mosaic_short(df, clustering_df, cluster_dict, leading_patterns_dict, cols_extracted):
-    print("Plotting short mosaic plot...")
-    print(df.columns)
-    dataframe = df.iloc[:, 1:-1]
-    tot_abnormal_records = sum(cluster_dict.values())
-    columns_for_mosaic = dataframe.columns
-    data, labels, props, support, col_color = {}, {}, {}, {}, {}
-
-    # color palette used in the mosaic plot
-    pal_hls = sns.color_palette("Blues", n_colors=6).as_hex()
-
-    for pos_col, col in enumerate(columns_for_mosaic):
-        for pos_pattern, pattern in enumerate(leading_patterns_dict.keys()):
-            keys_list = list(cluster_dict)
-            original_key = keys_list[pos_pattern]
-            key = original_key.split(",")
-            count_of_trues = 0
-            for item in key:
-                item = item.strip()
-                if item[pos_col] == '1':
-                    row = clustering_df.loc[clustering_df['pattern'] == item]
-                    count_of_trues += int(row["pattern_occurence"])
-            percentage_on_tile = float(count_of_trues / cluster_dict[original_key])
-
-            # get the cluster size of the cluster representative
-            cluster_size = [cluster_dict[key] for key in cluster_dict.keys() if pattern in key]
-            # set the tile size {(feature,binary_pattern):c_i * occurrence_of_binary_pattern}
-            # data[(pattern, col)] = abs(math.log(cols_extracted[col] * (cluster_size[0]/tot_abnormal_records)))
-            if ds==6:
-                data[(pattern, col)] = (cols_extracted[col] * math.log(cluster_size[0]+1))
-            else:
-                data[(pattern, col)] = (cols_extracted[col] * math.log(cluster_size[0]+1))
-
-            # set the color of the tiles
-            if percentage_on_tile == 1.00:
-                color = pal_hls[0]
-            elif percentage_on_tile >= 0.75:
-                color = pal_hls[1]
-            elif percentage_on_tile >= 0.5:
-                color = pal_hls[2]
-            elif percentage_on_tile >= 0.25:
-                color = pal_hls[3]
-            elif percentage_on_tile > 0.0:
-                color = pal_hls[4]
-            else:
-                color = pal_hls[5]
-
-            # color = col_color[support[col]]
-            props[(pattern, col)] = {'color': color}
-
-            # set label to show on tile. No tile labels shown
-            labels[(pattern, col)] = " "
-
-    data = dict(sorted(data.items(), key=lambda item: item[1]))
-    print("original data",data)
-    # reverse:true - to sort the dict in descending order, reverse:false - to sort the dict in ascending order.
-
-    dict_1, dict_2, dict_3, keys_list = {}, {}, {}, []
-    for key in data.keys():
-        keys_list.append(key[1])
-    keys_list = set(keys_list)
-    for item in keys_list:
-        temp_dict = {}
-        for key in data.keys():
-            if item == key[1]:
-                temp_dict[key] = data[key]
-                if len(temp_dict) == 3:
-                    temp_dict = dict(sorted(temp_dict.items(), key=lambda item: item[1]))
-                    dict_1[list(temp_dict.keys())[0]] = temp_dict[list(temp_dict.keys())[0]]
-                    dict_2[list(temp_dict.keys())[1]] = temp_dict[list(temp_dict.keys())[1]]
-                    dict_3[list(temp_dict.keys())[2]] = temp_dict[list(temp_dict.keys())[2]]
-                    # dict_4[list(temp_dict.keys())[3]] = temp_dict[list(temp_dict.keys())[3]]
-                    break
-    dict_1 = dict(sorted(dict_1.items(), key=lambda item: item[1], reverse=True))
-    dict_2 = dict(sorted(dict_2.items(), key=lambda item: item[1], reverse=True))
-    dict_3 = dict(sorted(dict_3.items(), key=lambda item: item[1], reverse=True))
-    # dict_4 = dict(sorted(dict_4.items(), key=lambda item: item[1], reverse=True))
-    print("printing individual dictionaries")
-    print(dict_1, dict_2, dict_3 )
-
-    # dict_1, dict_2, dict_3, dict_4, keys_list = {}, {}, {}, {}, []
-    # for key in data.keys():
-    #     keys_list.append(key[1])
-    # keys_list = set(keys_list)
-    # for item in keys_list:
-    #     temp_dict = {}
-    #     for key in data.keys():
-    #         if item == key[1]:
-    #             temp_dict[key] = data[key]
-    #             if len(temp_dict) == 4:
-    #                 temp_dict = dict(sorted(temp_dict.items(), key=lambda item: item[1]))
-    #                 dict_1[list(temp_dict.keys())[0]] = temp_dict[list(temp_dict.keys())[0]]
-    #                 dict_2[list(temp_dict.keys())[1]] = temp_dict[list(temp_dict.keys())[1]]
-    #                 dict_3[list(temp_dict.keys())[2]] = temp_dict[list(temp_dict.keys())[2]]
-    #                 dict_4[list(temp_dict.keys())[3]] = temp_dict[list(temp_dict.keys())[3]]
-    #                 break
-    # dict_1 = dict(sorted(dict_1.items(), key=lambda item: item[1], reverse=True))
-    # dict_2 = dict(sorted(dict_2.items(), key=lambda item: item[1], reverse=True))
-    # dict_3 = dict(sorted(dict_3.items(), key=lambda item: item[1], reverse=True))
-    # dict_4 = dict(sorted(dict_4.items(), key=lambda item: item[1], reverse=True))
-    # print("printing individual dictionaries")
-    # print(dict_1,dict_2, dict_3, dict_4)
-    # dicts = [dict_1, dict_2, dict_3, dict_4]
-
-    key_pair_dict, modified_dict = {}, {}
-    for dictionary in [dict_1, dict_2, dict_3]:
-        for key in dictionary.keys():
-            key1 = key[0].replace("0", "F")
-            key2 = key1.replace("1", "T")
-            list_uppercase_index = [idx for idx in range(len(key[1])) if key[1][idx].isupper()]
-            if len(list_uppercase_index) > 2:
-                if list(dictionary.keys()).index(key) % 2 != 0:
-                    if list_uppercase_index[1] == list_uppercase_index[2] - 2:
-                        xtick_label = key[1][0:list_uppercase_index[1]] + "\n" + key[1][list_uppercase_index[1]:]
-                    elif list_uppercase_index[1] == list_uppercase_index[2] - 1:
-                        xtick_label = key[1][0:list_uppercase_index[1]] + "\n" + key[1][list_uppercase_index[1]:]
-                    else:
-                        xtick_label = key[1][0:list_uppercase_index[2]] + "\n" + key[1][list_uppercase_index[2]:]
-                else:
-                    if list_uppercase_index[1] == list_uppercase_index[2] - 2:
-                        xtick_label = key[1][0:list_uppercase_index[1]] + "\n" + key[1][
-                                                                                 list_uppercase_index[1]:] + "\n" + "\n"
-                    elif list_uppercase_index[1] == list_uppercase_index[2] - 1:
-                        xtick_label = key[1][0:list_uppercase_index[1]] + "\n" + key[1][list_uppercase_index[1]:] + "\n" + "\n"
-                    else:
-                        xtick_label = key[1][0:list_uppercase_index[2]] + "\n" + key[1][
-                                                                                 list_uppercase_index[2]:] + "\n" + "\n"
-            else:
-                xtick_label = key[1][0:list_uppercase_index[1]] + "\n" + key[1][
-                                                                         list_uppercase_index[1]:] + "\n" + "\n"
-
-            key_pair_dict[key] = (key2, xtick_label)
-            modified_dict[(key2, xtick_label)] = dictionary[key]
-    data = modified_dict
-    print("modified data: ",data)
-
-    new_props = {}
-    for key in key_pair_dict.keys():
-        for key_props in props.keys():
-            if key == key_props:
-                new_props[key_pair_dict[key]] = props[key_props]
-    props = new_props
-
-    new_labels = {}
-    for key in key_pair_dict.keys():
-        for key_labels in labels.keys():
-            if key == key_labels:
-                new_labels[key_pair_dict[key]] = labels[key_labels]
-    labels = new_labels
-
-    labelizer = lambda k: labels[k]
-
-    # handles of the color palette
-    legend_labels = ["100%", "75% - 99%", "50% - 74%", "25% - 49%", "1% - 24%", "0%"]
-    handles, i = [], 0
-    for key in pal_hls:
-        handle = mpatches.Patch(color=key, label=legend_labels[i])
-        i += 1
-        handles.append(handle)
-
-    # bbox_to_anchor = (how much to go along x-axis. Higher the further, how much to go along y-axis
-    fig, ax = plt.subplots(constrained_layout=True)  # set constrained layout to true so nothing gets cropped
-    print("printing data: ", data)
-    print("printing props: ",props)
-    print("printing labelizer: ",labelizer)
-    mosaic(data, label_rotation=0, title="", horizontal=False, properties=props, labelizer=labelizer, gap=0.01,ax=ax)
-    fig.legend(handles=handles, bbox_to_anchor=(1.16, 0.8), loc='upper right', borderaxespad=0., fontsize=9)
-    plt.xticks(fontsize=12, rotation=0)
-    plt.yticks(fontsize=5)
-    plt.grid(False)
-    fig.savefig(tile_plot_file_name, bbox_inches='tight')
+        draw_mosaic(df, clustering_df, cluster_dict, cluster_dict, cols_extracted)
 
 def draw_mosaic(df, clustering_df, cluster_dict, leading_patterns_dict, cols_extracted):
     print("Plotting the mosaic plot...")
@@ -438,12 +230,8 @@ def draw_mosaic(df, clustering_df, cluster_dict, leading_patterns_dict, cols_ext
 
             # get the cluster size of the cluster representative
             cluster_size = [cluster_dict[key] for key in cluster_dict.keys() if pattern in key]
-            # set the tile size {(feature,binary_pattern):c_i * occurrence_of_binary_pattern}
-            # data[(pattern, col)] = abs(math.log(cols_extracted[col] * (cluster_size[0]/tot_abnormal_records)))
-            if ds==6:
-                data[(pattern, col)] = (cols_extracted[col] * math.log(cluster_size[0]+1))
-            else:
-                data[(pattern, col)] = (cols_extracted[col] * math.log(cluster_size[0]+1))
+            data[(pattern, col)] = (cols_extracted[col] * math.log(cluster_size[0]+1))
+
 
             # set the color of the tiles
             if percentage_on_tile == 1.00:
@@ -466,8 +254,6 @@ def draw_mosaic(df, clustering_df, cluster_dict, leading_patterns_dict, cols_ext
             labels[(pattern, col)] = " "
 
     data = dict(sorted(data.items(), key=lambda item: item[1]))
-    print("original data",data)
-    # reverse:true - to sort the dict in descending order, reverse:false - to sort the dict in ascending order.
 
     dict_1, dict_2, dict_3, dict_4, dict_5, keys_list = {}, {}, {}, {}, {}, []
     for key in data.keys():
@@ -491,31 +277,6 @@ def draw_mosaic(df, clustering_df, cluster_dict, leading_patterns_dict, cols_ext
     dict_3 = dict(sorted(dict_3.items(), key=lambda item: item[1], reverse=True))
     dict_4 = dict(sorted(dict_4.items(), key=lambda item: item[1], reverse=True))
     dict_5 = dict(sorted(dict_5.items(), key=lambda item: item[1], reverse=True))
-    print("printing individual dictionaries")
-    print(dict_1,dict_2, dict_3, dict_4, dict_5)
-    exit(0)
-
-
-    if ds == 6:
-        key_order = ["IncGotFeverCount", "IncGotHeadAcheCount", "IncCoronaPosCount", "IncGotCoughCount", "IncGotSoreThroatCount","IncAgeAbove60Count", "IncContWithConfCaseCount"]
-        dictionaries = [dict_1, dict_2, dict_3, dict_4, dict_5]
-        d1, d2, d3, d4, d5 = {}, {}, {}, {}, {}
-        for item in key_order:
-            for dictionary in dictionaries:
-                for key in dictionary.keys():
-                    if item == key[1]:
-                        if dictionary == dict_1:
-                            d1[key] = dict_1[key]
-                        elif dictionary == dict_2:
-                            d2[key] = dict_2[key]
-                        elif dictionary == dict_3:
-                            d3[key] = dict_3[key]
-                        elif dictionary == dict_4:
-                            d4[key] = dict_4[key]
-                        elif dictionary == dict_5:
-                            d5[key] = dict_5[key]
-
-        dict_1, dict_2, dict_3, dict_4, dict_5 = d1, d2, d3, d4, d5
 
     key_pair_dict, modified_dict = {}, {}
     for dictionary in [dict_1, dict_2, dict_3, dict_4, dict_5]:
@@ -547,7 +308,6 @@ def draw_mosaic(df, clustering_df, cluster_dict, leading_patterns_dict, cols_ext
             key_pair_dict[key] = (key2, xtick_label)
             modified_dict[(key2, xtick_label)] = dictionary[key]
     data = modified_dict
-    print("modified data: ",data)
 
     new_props = {}
     for key in key_pair_dict.keys():
@@ -575,9 +335,6 @@ def draw_mosaic(df, clustering_df, cluster_dict, leading_patterns_dict, cols_ext
 
     # bbox_to_anchor = (how much to go along x-axis. Higher the further, how much to go along y-axis
     fig, ax = plt.subplots(constrained_layout=True)  # set constrained layout to true so nothing gets cropped
-    print("printing data: ", data)
-    print("printing props: ",props)
-    print("printing labelizer: ",labelizer)
     mosaic(data, label_rotation=0, title="", horizontal=False, properties=props, labelizer=labelizer, gap=0.01,ax=ax)
     fig.legend(handles=handles, bbox_to_anchor=(1.16, 0.8), loc='upper right', borderaxespad=0., fontsize=9)
     plt.xticks(fontsize=12, rotation=0)
