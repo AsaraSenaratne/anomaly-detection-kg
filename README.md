@@ -44,7 +44,12 @@ Open a terminal and change directory to the cloned project:
 cd <path_to_directory>/abnormality_detection_kg/source-files
 
 ```
-
+Ensure that the following libraries inside the 'assets' folder are properly
+downloaded, and imported within yago_links.py.
+````
+en_core_web_sm-3.0.0
+stanford-ner-4.2.0
+````
 Run main.py:
 ```
 python3 -W ignore main.py
