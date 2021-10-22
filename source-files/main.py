@@ -70,7 +70,7 @@ def visualization():
     execution_time = time.time() - start_time
     print('Total runtime taken feature generation: %.6f sec' % (execution_time))
 
-# generate_features()
+generate_features()
 
 
 

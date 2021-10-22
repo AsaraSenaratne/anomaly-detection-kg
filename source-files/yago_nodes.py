@@ -13,23 +13,14 @@ import validators
 import re
 
 
-csv_links = "assets/yago-links.csv"
-csv_node_labels = "assets/yago-node-labels.csv"
-csv_nodes = "assets/yago-nodes.csv"
-entity_file = "assets/entities_nodes.csv"
-data_type_json = "assets/data-type-validation.json"
+csv_links = "../results/yago-links.csv"
+csv_node_labels = "../results/yago-node-labels.csv"
+csv_nodes = "../results/yago-nodes.csv"
+entity_file = "../results/entities_nodes.csv"
+data_type_json = "../results/data-type-validation.json"
 
 
 ############################Triple Features############################################################################
-
-def get_info_wiki():
-    wiki_wiki = wikipediaapi.Wikipedia(language='en', extract_format=wikipediaapi.ExtractFormat.HTML)
-    page_py = wiki_wiki.page('Donald Trump')
-    if page_py.exists():
-        print(page_py.text)
-    g = Graph().parse("https://www.wikidata.org/wiki/Special:EntityData/Q42.jsonld", format='json-ld')
-    for st in g:
-        print(st)
 
 def pred_occur():
 #counts the no. of times a predicate occurs within the entire dataset
@@ -420,24 +411,24 @@ def is_url(url):
         return True
 
 
-# pred_occur()
-# subj_pred_occur()
-# dup_triples()
-# cal_haslabel_similarity()
-# tot_literals()
-# count_dif_literal_types()
-# count_isa_triples()
-# count_haslabel_triples()
-# count_subclassof_triples()
-# count_subpropertyof_triples()
+pred_occur()
+subj_pred_occur()
+dup_triples()
+cal_haslabel_similarity()
+tot_literals()
+count_dif_literal_types()
+count_isa_triples()
+count_haslabel_triples()
+count_subclassof_triples()
+count_subpropertyof_triples()
 count_high_sim_labels()
 count_low_sim_labels()
-# tot_outgoing_links()
-# tot_incoming_links()
-# validate_literal_data_type()
-# count_occur_dup_triples()
-# count_invalid_literals()
+tot_outgoing_links()
+tot_incoming_links()
+validate_literal_data_type()
+count_occur_dup_triples()
+count_invalid_literals()
 entity_recognition()
-# pred_entity_type_occur()
-# find_com_rare_entity_type()
+pred_entity_type_occur()
+find_com_rare_entity_type()
 
