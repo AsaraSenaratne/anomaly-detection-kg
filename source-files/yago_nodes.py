@@ -433,6 +433,10 @@ def feature_reduction():
     print("Inside feature reduction")
     df = pd.read_csv(csv_node_labels)
     df_fileterd = df.iloc[:,3:]
+    for feature in df_fileterd.columns:
+        if df_fileterd.dtypes[feature] != np.int64 or df_fileterd.dtypes[feature] != np.float64:
+            df_fileterd[feature].replace(['1','0','True','False',True,False],[1,0,1,0,1,0], inplace=True)
+            df_fileterd[feature] = df_fileterd[feature].astype(np.float)
     for col in df_fileterd.columns:
         count_unique = len(df[col].unique())
         if count_unique == 1:
