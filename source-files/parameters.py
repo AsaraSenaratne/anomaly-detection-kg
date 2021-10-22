@@ -15,7 +15,7 @@ def params(dataset):
         # YAGO nodes
         params.feature_file = "../results/features_selected_yago_nodes.csv"
         params.svm_output_pkl = "../results/yago_nodes_svm_output.pkl"
-        params.initial_attribute_count = 19
+        params.initial_attribute_count = 8
         params.name = "YAGO Nodes"
         params.support_file = "../results/yago_nodes_support.csv"
         params.tile_plot_file_name = "../results/tile_plot_yago_nodes.eps"
