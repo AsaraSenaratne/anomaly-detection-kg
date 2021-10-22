@@ -9,17 +9,21 @@ import matplotlib.patches as mpatches
 import seaborn as sns; sns.set_theme(color_codes=True)
 import csv
 from statistics import median
-
-global ds, name, svm_output_file, support_file, tile_plot_file_name, association_plot_file_name
-ds = 100
+import parameters as pm
 
 
-name = "YAGO Links"
-svm_output_file = "../results/yago_links_svm_output.pkl"
-support_file = "../results/yago_links_support.csv"
-tile_plot_file_name = "../results/tile_plot_yago_links.eps"
-association_plot_file_name = "../results/ass_plot_wikidata_yago_links.eps"
-columns_start_count = 0
+def get_params(dataset):
+    pm.params(dataset)
+    global ds, name, svm_output_file, support_file, tile_plot_file_name, association_plot_file_name, columns_start_count
+    name = pm.params.name
+    svm_output_file = pm.params.svm_output_file
+    svm_output_file = pm.params.svm_output_file
+    support_file = pm.params.support_file
+    tile_plot_file_name = pm.params.tile_plot_file_name
+    association_plot_file_name = pm.params.association_plot_file_name
+    columns_start_count = pm.params.columns_start_count
+    ds = 100
+    identify_consistent_features()
 
 def identify_consistent_features():
     print("Identifying consistency of the features...")

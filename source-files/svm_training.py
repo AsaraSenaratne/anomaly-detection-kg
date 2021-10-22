@@ -1,11 +1,16 @@
 import numpy as py
 import pandas as pd
 from sklearn.svm import OneClassSVM
+import parameters as pm
 
-feature_file = "../results/features_selected_yago_links.csv"
-dataframemain = pd.read_csv(feature_file)
-svm_output_pkl = "../results/yago_links_svm_output.pkl"
-initial_attribute_count =19
+def get_params(dataset):
+    pm.params(dataset)
+    global feature_file, dataframemain, svm_output_pkl, initial_attribute_count
+    feature_file = pm.params.feature_file
+    dataframemain = pd.read_csv(feature_file)
+    svm_output_pkl = pm.params.svm_output_pkl
+    initial_attribute_count = pm.params.initial_attribute_count
+    get_abnormal_counts()
 
 def get_abnormal_counts():
     print("Generating abnormal counts and scores")

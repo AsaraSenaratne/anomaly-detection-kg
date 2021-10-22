@@ -255,10 +255,7 @@ def feature_reduction():
     for i in range(0, len(columns)-1):
         for j in range(i+1, len(columns)):
             print(columns[i],columns[j])
-            try:
-                correlation = df_fileterd[columns[i]].corr(df_fileterd[columns[j]])
-            except:
-                correlation = 0
+            correlation = df_fileterd[columns[i]].corr(df_fileterd[columns[j]])
             if correlation == 1:
                 print(columns[i], columns[j])
                 corr_feature_list.append(columns[i])

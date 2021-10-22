@@ -3,10 +3,8 @@ plugin.register('json-ld', 'Serializer', 'rdfextras.serializers.jsonld', 'JsonLD
 import csv
 import pandas as pd
 from collections import Counter
-import networkx as nx
 from nltk.tag import StanfordNERTagger
 import spacy
-import wikipediaapi
 import jellyfish as jf
 import json
 import validators
@@ -18,6 +16,8 @@ csv_node_labels = "../results/yago-node-labels.csv"
 csv_nodes = "../results/yago-nodes.csv"
 entity_file = "../results/entities_nodes.csv"
 data_type_json = "../results/data-type-validation.json"
+csv_with_features = "../results/features_selected_yago_nodes.csv"
+
 
 
 ############################Triple Features############################################################################
@@ -28,6 +28,7 @@ def pred_occur():
     df_node_labels = pd.read_csv(csv_node_labels)
     df_node_labels['CountPredOccur'] = df_node_labels['predicate'].map(Counter(list(df_node_labels['predicate'])))
     df_node_labels.to_csv(csv_node_labels, index=False)
+    subj_pred_occur()
 
 def subj_pred_occur():
 # counts the no. of times a predicate occurs within the entity's group
@@ -39,6 +40,7 @@ def subj_pred_occur():
         label_count[group] = len(total_groups.get_group(group))
     df_node_labels['CountPredOccurofSubject'] = df_node_labels.set_index(['subject', 'predicate']).index.map(label_count.get)
     df_node_labels.to_csv(csv_node_labels, index=False)
+    dup_triples()
 
 def dup_triples():
 # counts the no. of times a predicate occurs within the entity's group
@@ -53,6 +55,7 @@ def dup_triples():
             continue
     df_node_labels['CountDupTriples'] = df_node_labels.set_index(['subject', 'predicate', 'object']).index.map(label_count.get)
     df_node_labels.to_csv(csv_node_labels, index=False)
+    cal_haslabel_similarity()
 
 def cal_haslabel_similarity():
 # Calculate the similarity between two labels given a has_label predicate
@@ -74,6 +77,7 @@ def cal_haslabel_similarity():
             label_count[(row['subject'], row['object'])] = "na"
     df_node_labels['SimSubjectObject'] = df_node_labels.set_index(['subject', 'object']).index.map(label_count.get)
     df_node_labels.to_csv(csv_node_labels, index=False)
+    tot_literals()
 
 def entity_recognition():
     print("inside entity_recognition")
@@ -121,6 +125,7 @@ def entity_recognition():
     df_node_labels['SubjectEntityType'] = df_node_labels.set_index(['subject']).index.map(dict_entity_type.get)
     df_node_labels['ObjectEntityType'] = df_node_labels.set_index(['object']).index.map(dict_entity_type.get)
     df_node_labels.to_csv(csv_node_labels, index=False)
+    pred_entity_type_occur()
 
 def pred_entity_type_occur():
 #this method counts the no. of times a particular predicate occurs with the two given entity types of subject and object
@@ -135,6 +140,7 @@ def pred_entity_type_occur():
             continue
     df_node_labels['CountPredOccurEntityType'] = df_node_labels.set_index(['SubjectEntityType','ObjectEntityType','predicate']).index.map(label_count.get)
     df_node_labels.to_csv(csv_node_labels, index=False)
+    find_com_rare_entity_type()
 
 def validate_literal_data_type():
     print("inside validate_literal_data_type")
@@ -173,6 +179,7 @@ def validate_literal_data_type():
         validity_score.append(validity)
     df_node_labels['ValidityOfLiteral'] = validity_score
     df_node_labels.to_csv(csv_node_labels, index=False)
+    count_occur_dup_triples()
 
 
 ############################Node Features############################################################################
@@ -190,6 +197,7 @@ def tot_literals():
     data = {'node':list(label_count.keys()), 'CountLiterals': list(label_count.values()) }
     df_nodes = pd.DataFrame.from_dict(data)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_dif_literal_types()
 
 def count_dif_literal_types():
 #count different types of predicates an entity has got where the object is a literal
@@ -205,6 +213,7 @@ def count_dif_literal_types():
         label_count[group] = count_dif_literals
     df_nodes['CountDifLiteralTypes'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_isa_triples()
 
 def count_isa_triples():
 #count different types of predicates an entity has got where the object is a literal
@@ -220,6 +229,7 @@ def count_isa_triples():
         label_count[group] = count_dif_literals
     df_nodes['CountIsaPredicate'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_haslabel_triples()
 
 def count_haslabel_triples():
 #count different types of predicates an entity has got where the object is a literal
@@ -235,6 +245,7 @@ def count_haslabel_triples():
         label_count[group] = count_dif_literals
     df_nodes['CountHaslabelPredicate'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_subclassof_triples()
 
 
 def count_subclassof_triples():
@@ -251,6 +262,7 @@ def count_subclassof_triples():
         label_count[group] = count_dif_literals
     df_nodes['CountSubclassofPredicate'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_subpropertyof_triples()
 
 def count_subpropertyof_triples():
 #count different types of predicates an entity has got where the object is a literal
@@ -266,6 +278,7 @@ def count_subpropertyof_triples():
         label_count[group] = count_dif_literals
     df_nodes['CountSubpropofPredicate'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_high_sim_labels()
 
 def count_high_sim_labels():
 #count different types of predicates an entity has got where the object is a literal
@@ -283,6 +296,7 @@ def count_high_sim_labels():
         label_count[group] = count
     df_nodes['CountHighSimLabels'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_low_sim_labels()
 
 def count_low_sim_labels():
 #count different types of predicates an entity has got where the object is a literal
@@ -300,6 +314,7 @@ def count_low_sim_labels():
         label_count[group] = count
     df_nodes['CountLowSimLabels'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    tot_outgoing_links()
 
 def tot_outgoing_links():
     print("inside tot_incoming_links")
@@ -321,6 +336,7 @@ def tot_outgoing_links():
         label_count[group] = fetched_node_label_groups + fetched_link_groups
     df_nodes['OutDegree'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    tot_incoming_links()
 
 def tot_incoming_links():
     print("inside tot_outgoing_links")
@@ -336,6 +352,7 @@ def tot_incoming_links():
         label_count[group] = fetched_link_groups
     df_nodes['InDegree'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    validate_literal_data_type()
 
 def find_com_rare_entity_type():
 # counts the no. of times a predicate occurs within the entity's group
@@ -372,6 +389,7 @@ def count_occur_dup_triples():
         label_count[group] = count
     df_nodes['CountDupTriples'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    count_invalid_literals()
 
 def count_invalid_literals():
     print("inside count_invalid_literals")
@@ -387,6 +405,7 @@ def count_invalid_literals():
         label_count[group] = count
     df_nodes['CountInvalidTriples'] = df_nodes.set_index(['node']).index.map(label_count.get)
     df_nodes.to_csv(csv_nodes, index=False)
+    entity_recognition()
 
 ########################################Special Functions###################################
 def is_date(string, fuzzy=False):
@@ -410,25 +429,49 @@ def is_url(url):
     else:
         return True
 
+def feature_reduction():
+    print("Inside feature reduction")
+    df = pd.read_csv(csv_node_labels)
+    df_fileterd = df.iloc[:,3:]
+    for col in df_fileterd.columns:
+        count_unique = len(df[col].unique())
+        if count_unique == 1:
+            print(col)
+            df_fileterd.drop(col, inplace=True, axis=1)
+    columns = list(df_fileterd.columns)
+    corr_feature_list = []
+    for i in range(0, len(columns)-1):
+        for j in range(i+1, len(columns)):
+            print(columns[i],columns[j])
+            correlation = df_fileterd[columns[i]].corr(df_fileterd[columns[j]])
+            if correlation == 1:
+                print(columns[i], columns[j])
+                corr_feature_list.append(columns[i])
+                corr_feature_list.append(columns[j])
+    remove_corr_features(corr_feature_list, df_fileterd, df)
 
-pred_occur()
-subj_pred_occur()
-dup_triples()
-cal_haslabel_similarity()
-tot_literals()
-count_dif_literal_types()
-count_isa_triples()
-count_haslabel_triples()
-count_subclassof_triples()
-count_subpropertyof_triples()
-count_high_sim_labels()
-count_low_sim_labels()
-tot_outgoing_links()
-tot_incoming_links()
-validate_literal_data_type()
-count_occur_dup_triples()
-count_invalid_literals()
-entity_recognition()
-pred_entity_type_occur()
-find_com_rare_entity_type()
+def remove_corr_features(corr_feature_list, df_fileterd, df):
+    print("Correlated Features: ", corr_feature_list)
+    features_to_remove  = [input("Enter the features to remove seperated by a comma without spaces: ")]
+    if features_to_remove[0] == '':
+        gen_binary_feature(df_fileterd, df)
+    else:
+        for feature in features_to_remove:
+            df_fileterd.drop(feature, inplace=True, axis=1)
+        gen_binary_feature(df_fileterd, df)
+
+def gen_binary_feature(df_fileterd, df):
+    print("inside binary_features")
+    columns = df_fileterd.columns
+    for column in columns:
+        new_col = []
+        new_col_name = "Freq" + column
+        for index, row in df_fileterd.iterrows():
+            if row[column] > df_fileterd[column].median():
+                new_col.append(1)
+            else:
+                new_col.append(0)
+        df[new_col_name] = new_col
+    df.to_csv(csv_with_features, index=False)
+
 

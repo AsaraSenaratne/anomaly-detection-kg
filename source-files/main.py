@@ -47,28 +47,37 @@ import pattern_generation as pg
 def generate_features():
     print("-----------------------------------")
     print("Generating features for YAGO-1")
+    dataset=1
     start_time = time.time()
     yl.construct_df()
     execution_time = time.time() - start_time
-    print('Total runtime taken feature generation: %.6f sec' % (execution_time))
-    learn_one_class_svm()
+    print('Total runtime taken for feature generation: %.6f sec' % (execution_time))
+    learn_one_class_svm(dataset)
+    visualization(dataset)
 
-def learn_one_class_svm():
+    dataset = 2
+    start_time = time.time()
+    nl.pred_occur()
+    execution_time = time.time() - start_time
+    print('Total runtime taken for feature generation: %.6f sec' % (execution_time))
+    learn_one_class_svm(dataset)
+    visualization(dataset)
+
+def learn_one_class_svm(dataset):
     print("-----------------------------------")
     print("Started learning one-class SVM")
     start_time = time.time()
-    svm.get_abnormal_counts()
+    svm.get_params(dataset)
     execution_time = time.time() - start_time
-    print('Total runtime taken feature generation: %.6f sec' % (execution_time))
-    visualization()
+    print('Total runtime taken for feature generation: %.6f sec' % (execution_time))
 
-def visualization():
+def visualization(dataset):
     print("-----------------------------------")
     print("Started learning one-class SVM")
     start_time = time.time()
-    pg.identify_consistent_features()
+    pg.get_params(dataset)
     execution_time = time.time() - start_time
-    print('Total runtime taken feature generation: %.6f sec' % (execution_time))
+    print('Total runtime taken for feature generation: %.6f sec' % (execution_time))
 
 generate_features()
 

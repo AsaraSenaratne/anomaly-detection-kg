@@ -59,7 +59,7 @@ python3 -W ignore main.py
 ```
 
 ## Folder structure of the project
-Assets folder - this folder contains the datasets used for analysis.  
+Assets folder - this folder contains the YAGO-1 KG used for analysis.  
 Results folder - this folder gets created at program execution. All the plots, pickle files and CSV files that are generated as a result of program execution will be stored in this folder.  
 Source folder - source code files are within this folder.  
 Other files:
@@ -70,3 +70,9 @@ Other files:
 ## Reading the results folder
 The results folder contains all graphs and other intermediary results files generated at different steps of program execution. CSV files are available to view the initial nodes dataset, any intermediary supporting datasets built (such as merged datasets) and SVM output.  
 Visualization outputs are available as a tile plot and an association plot in .eps format.  
+
+## Using the file fetch_anomalies.py
+Once the visualizations are generated, you can use the file named
+"fetch_anomalies.py" to fetch anomalous triples belonging to each anomalous cluster
+shown on the tile plot. Enter the file path, anomalous features as per the plot, and the binary 
+pattern to get the anomalous triples saved in a .csv file.
